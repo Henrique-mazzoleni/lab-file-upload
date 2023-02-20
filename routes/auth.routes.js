@@ -83,7 +83,6 @@ router.get("/login", isLoggedOut, (req, res) => res.render("auth/login"));
 
 // .post() login route ==> to process form data
 router.post("/login", isLoggedOut, (req, res, next) => {
-  console.log('start login post', req.session)
   const { email, password } = req.body;
 
   if (email === "" || password === "") {
@@ -103,7 +102,6 @@ router.post("/login", isLoggedOut, (req, res, next) => {
           if (error) next(error)
           
           req.session.currentUser = user;
-          console.log('login post before redirect',req.session)
           
           req.session.save((error) => {
             if (error) next(error)
@@ -127,7 +125,7 @@ router.post("/logout", isLoggedIn, (req, res) => {
 });
 
 router.get("/user-profile", isLoggedIn, (req, res) => {
-  res.render("users/user-profile");
+  res.render("users/user-profile", { user: req.session.currentUser});
 });
 
 module.exports = router;
