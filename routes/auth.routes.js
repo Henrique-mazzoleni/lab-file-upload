@@ -13,6 +13,8 @@ const User = require("../models/User.model");
 // require (import) middleware functions
 const { isLoggedIn, isLoggedOut } = require("../middleware/route-guard.js");
 
+const fileUploader = require('../config/cloudinary.config');
+
 ////////////////////////////////////////////////////////////////////////
 ///////////////////////////// SIGNUP //////////////////////////////////
 ////////////////////////////////////////////////////////////////////////
@@ -21,7 +23,7 @@ const { isLoggedIn, isLoggedOut } = require("../middleware/route-guard.js");
 router.get("/signup", isLoggedOut, (req, res) => res.render("auth/signup"));
 
 // .post() route ==> to process form data
-router.post("/signup", isLoggedOut, (req, res, next) => {
+router.post("/signup", isLoggedOut, fileUploader.single('profile-picture'), (req, res, next) => {
   const { username, email, password } = req.body;
 
   if (!username || !email || !password) {
@@ -51,7 +53,8 @@ router.post("/signup", isLoggedOut, (req, res, next) => {
         // passwordHash => this is the key from the User model
         //     ^
         //     |            |--> this is placeholder (how we named returning value from the previous method (.hash()))
-        passwordHash: hashedPassword
+        passwordHash: hashedPassword,
+        pictureURL: req.file.path
       });
     })
     .then((userFromDB) => {
@@ -80,6 +83,7 @@ router.get("/login", isLoggedOut, (req, res) => res.render("auth/login"));
 
 // .post() login route ==> to process form data
 router.post("/login", isLoggedOut, (req, res, next) => {
+  console.log('start login post', req.session)
   const { email, password } = req.body;
 
   if (email === "" || password === "") {
@@ -95,8 +99,17 @@ router.post("/login", isLoggedOut, (req, res, next) => {
         res.render("auth/login", { errorMessage: "Email is not registered. Try with other email." });
         return;
       } else if (bcryptjs.compareSync(password, user.passwordHash)) {
-        req.session.currentUser = user;
-        res.redirect("/user-profile");
+        req.session.regenerate((error) => {
+          if (error) next(error)
+          
+          req.session.currentUser = user;
+          console.log('login post before redirect',req.session)
+          
+          req.session.save((error) => {
+            if (error) next(error)
+            res.redirect("/user-profile")
+          })
+        })
       } else {
         res.render("auth/login", { errorMessage: "Incorrect password." });
       }

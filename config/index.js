@@ -48,11 +48,14 @@ module.exports = (app) => {
   );
 
   // ℹ️ Middleware that adds a "req.session" information and later to check that you are who you say you are 😅
+  app.set('trust proxy', 1)
+
   app.use(
     session({
       secret: process.env.SESSION_SECRET || "super hyper secret key",
       resave: false,
-      saveUninitialized: false,
+      saveUninitialized: true,
+      cookie: {secure:false},
       store: MongoStore.create({
         mongoUrl: process.env.MONGODB_URI || "mongodb://localhost/lab-express-irontumblr",
       }),
