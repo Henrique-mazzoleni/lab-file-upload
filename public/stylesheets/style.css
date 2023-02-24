@@ -122,3 +122,22 @@ ul li {
 #profile-pic {
   height: 200px;
 }
+
+.pic-list {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.pic-list img {
+  height: 500px;
+}
+
+.post-detail-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.post-detail-card img {
+  height: 600px;
+}

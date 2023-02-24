@@ -2,6 +2,7 @@
     <img src="{{ user.pictureURL }}" alt="{{ user.username }}'s picture" id="profile-pic">
     <h2>Welcome, {{ user.username }}!</h2>
     <p>This is your profile page my friend! And your email is: {{ user.email }}</p>
+    <a href="/new-post">Create a new Post!</a>
 {{else}}
     <p>Still no logged in user, sorry!</p>
 {{/if}}

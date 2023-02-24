@@ -105,7 +105,7 @@ router.post("/login", isLoggedOut, (req, res, next) => {
           
           req.session.save((error) => {
             if (error) next(error)
-            res.redirect("/user-profile")
+            res.redirect("/")
           })
         })
       } else {
