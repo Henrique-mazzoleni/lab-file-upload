@@ -1,3 +1,4 @@
+<a href="/">Back to Home</a>
 {{#with post}}
 <div class="post-detail-card">
     <h1>{{picName}}</h1>
@@ -5,5 +6,28 @@
     <p>{{content}}</p>
     <p>Created by: {{creatorId.username}}</p>
 </div>
-<a href="/">Back to Home</a>
+{{#if ../user}}
+<form action="/post/{{_id}}/new-comment" method="Post" enctype="multipart/form-data">
+    <label>
+        Content
+        <textarea name="content" cols="30" rows="10"></textarea>
+    </label>
+    <label>
+        image
+        <input type="file" name="comment-image">
+    </label>
+    <label>
+        caption
+        <input type="text" name="imageName">
+    </label>
+    <button type="submit">Submit</button>
+</form>
+{{/if}}
+{{#each comments}}
+<div class="comment">
+    <img src={{imagePath}} alt="{{imageName}}">
+    <p>{{content}}</p>
+    <p><strong>by</strong> {{creatorId.username}}</p>
+</div>
+{{/each}}
 {{/with}}

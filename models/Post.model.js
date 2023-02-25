@@ -6,6 +6,7 @@ const schema = new Schema(
         creatorId: { type: Schema.Types.ObjectId, ref: 'User'},
         picPath: String,
         picName: String,
+        comments: [{type: Schema.Types.ObjectId, ref: 'Comment'}],
     },
     {
         timestamps: true

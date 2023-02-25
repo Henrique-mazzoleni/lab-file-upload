@@ -1,6 +1,7 @@
 const router = require("express").Router();
 
 const Post = require("../models/Post.model");
+const Comment = require('../models/Comment.model')
 
 const { isLoggedIn } = require("../middleware/route-guard");
 const fileUploader = require("../config/cloudinary.config");
@@ -22,12 +23,38 @@ router.post('/new-post', isLoggedIn, fileUploader.single('post-picture'), async 
 
 router.get('/post/:postId', async (req, res, next) => {
     try {
-        const post = await Post.findById(req.params.postId).populate('creatorId')
+        const post = await Post.findById(req.params.postId).populate('creatorId').populate('comments').populate({
+            path: 'comments',
+            populate: {
+                path: 'creatorId',
+                model: 'User'
+            }})
         res.render('post-detail', {user: req.session.currentUser, post})
     } catch (error) {
         next(error)
     }
     
 })
+
+router.post('/post/:postId/new-comment', isLoggedIn, fileUploader.single('comment-image'), async (req, res, next) => {
+    const { content, imageName } = req.body
+    const imagePath = req.file.path
+
+    try {
+        const post = await Post.findById(req.params.postId)
+        const comment = await Comment.create({
+            content,
+            imagePath,
+            imageName,
+            creatorId: req.session.currentUser,
+        })
+        post.comments.push(comment._id)
+        await post.save()
+        res.redirect(`/post/${req.params.postId}`)
+
+    } catch (error) {
+        next(error)
+    }
+} )
 
 module.exports = router;
